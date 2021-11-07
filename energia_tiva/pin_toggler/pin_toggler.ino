@@ -1,5 +1,5 @@
 /*
-  Serial Event example
+  Based on "Serial Event example"
 
   When new serial data arrives, this sketch adds it to a String.
   When a newline is received, the loop prints the string and 
@@ -20,8 +20,16 @@
 
 */
 
+/*
+ * 
+ */
+
 String inputString = ""; // a string to hold incoming data
 boolean stringComplete = false; // whether the string is complete
+boolean pinState = 1;
+int colSelect = 0;
+int rowSelect = 0;
+
 
 void setup() {
   // initialize serial:
@@ -36,25 +44,68 @@ void loop() {
     Serial.println(inputString); 
     // toggle appropriate pin
     //if (!(inputString.startsWith("on ") || inputString.startsWith("off "))) {
-    //  Serial.println("Malformed command! Try again with 'on 0 1' to turn ON LED at position (0,1), for example")
+    //  Serial.println("Malformed command! Try again with 'on 0 1' to turn on LED at position (0,1), for example")
     //} else {
     //  while (inputString != "") {
     //    lastCommand = inputString.lastIndexOf(' ');
     //  }
-    if (inputString.startsWith("of") {
-      digital
-    } else if (inputString.startsWith("on") {
-      
-    } else {
+    
+    Serial.print("inputString before determining on/off = '");
+    Serial.print(inputString);
+    Serial.print("'");
+    Serial.println();    
+    if (inputString.startsWith("of")) {
+      pinState = 0;
+    } else if (inputString.startsWith("on")) {
+      pinState = 1;
     }
+    // delete [of ] or [on ]
+    inputString = inputString.substring(3); 
+    
+    // now string resembles '0 1x\n' where x is potentially a number in the ones place
+    Serial.print("inputString before determining column = '");
+    Serial.print(inputString);
+    Serial.print("'");
+    Serial.println();    
+    colSelect = inputString.charAt(0) - '0';
+    inputString = inputString.substring(2);
+
+    // now string resembles '1x\n' where x is potentially a number in the ones place
+    Serial.print("inputString before determining row = '");
+    Serial.print(inputString);
+    Serial.print("'");
+    Serial.println();    
+    if (inputString.charAt(1) == '\n') {
+      rowSelect = inputString.charAt(0) - '0';
+    } else {
+      rowSelect = (10*(inputString.charAt(0)-'0') + (inputString.charAt(1)-'0'));
+    }
+    inputString = inputString.substring(1);
+    
+    Serial.print("inputString at end of iteration = '");
+    Serial.print(inputString);
+    Serial.print("'");
+    Serial.println();
+
+    Serial.print("Setting LED at (");
+    Serial.print(colSelect);
+    Serial.print(",");
+    Serial.print(rowSelect);
+    Serial.print(") to state ");
+    Serial.print(pinState);
+    Serial.println(".");
+
+    // Until pin configurator written, keep the following print statement
+    // should prevent confusion about "why it doesn't work"
+    Serial.println("(Nothing has been configured, please write/enable pin configurator)");
+    //    Serial.println("Pin reconfigured.");
+
+    Serial.println();
     // clear the string:
     inputString = "";
     stringComplete = false;
   }
 }
-
-pinMode(13, OUTPUT);
-digitalWrite(13, HIGH);
 
 /*
   SerialEvent occurs whenever a new data comes in the
@@ -74,6 +125,10 @@ void serialEvent() {
     stringComplete = true;
     } 
   }
+}
+
+void pinConfigurator () {
+  
 }
 
 // Error checking for later!! Get the functionality going first
