@@ -201,6 +201,33 @@ void pinConfigurator (int enable, int row, int col) {
   }
 }
 
+void pinConfigurator2() {
+
+  // test configuration of LED arrays
+  for (int i = 0; i < rowPinLen; i++) {
+    digitalWrite(rowPin[i], HIGH);
+    for (int j = 0; j < colPinLen; j++) {
+      digitalWrite(colPin[j], HIGH);
+      delay(500);
+    }
+    for (int j = 0; j < colPinLen; j++) {
+      digitalWrite(colPin[j], LOW);
+    }
+    digitalWrite(rowPin[i], LOW);
+    delay(2500);
+  }
+
+
+  // Set all pins in use to low so they don't float or anything
+  for (int i = 0; i < rowPinLen; i++) {
+    digitalWrite(rowPin[i], LOW);
+  }
+  for (int j = 0; j < colPinLen; j++) {
+    digitalWrite(colPin[j], LOW);
+  }
+  
+}
+
 /*void pinConfigurator (int enable, int row, int col) {
   static byte framebuffer[15] = {}; // all possible LEDs, one bit per LED, one byte per row
   static byte prevRow; // possibly useful for efficiency
