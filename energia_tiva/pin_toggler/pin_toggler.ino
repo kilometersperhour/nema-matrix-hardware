@@ -43,27 +43,41 @@ boolean debugSerial = false; // enable = true; use to view string at different s
 void setup() {
   // initialize serial:
   Serial.begin(9600);
+  delay(350);
+  Serial.println("Serial connection initialized.");
   inputString.reserve(200);
 
-  // Set all pins in use to low so they don't float
+  // Set all pins in use to low for initialization test
   for (int i = 0; i < rowPinLen; i++) {
     pinMode(rowPin[i], OUTPUT);
     digitalWrite(rowPin[i], LOW);
   }
-  for (int i = 0; i < colPinLen; i++) {
-    pinMode(colPin[i], OUTPUT);
-    digitalWrite(colPin[i], LOW);
+  for (int j = 0; j < colPinLen; j++) {
+    pinMode(colPin[j], OUTPUT);
+    digitalWrite(colPin[j], LOW);
   }
 
+  // test configuration of LED arrays
   for (int i = 0; i < rowPinLen; i++) {
-    pinMode(rowPin[i], OUTPUT);
     digitalWrite(rowPin[i], HIGH);
-//    delay(50);
+    for (int j = 0; j < colPinLen; j++) {
+      digitalWrite(colPin[j], HIGH);
+      delay(500);
+    }
+    for (int j = 0; j < colPinLen; j++) {
+      digitalWrite(colPin[j], LOW);
+    }
+    digitalWrite(rowPin[i], LOW);
+    delay(2500);
   }
-  for (int i = 0; i < colPinLen; i++) {
-    pinMode(colPin[i], OUTPUT);
-    digitalWrite(colPin[i], HIGH);
-//    delay(50);
+
+
+  // Set all pins in use to low so they don't float or anything
+  for (int i = 0; i < rowPinLen; i++) {
+    digitalWrite(rowPin[i], LOW);
+  }
+  for (int j = 0; j < colPinLen; j++) {
+    digitalWrite(colPin[j], LOW);
   }
 
 }
