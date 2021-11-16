@@ -21,8 +21,6 @@
 */
 
 /* Things to do:
- * Create framebuffer manager
- *   Set a row of pins according to the bytes set in a row
  * Error checking
  */
 
@@ -36,9 +34,6 @@ int rowPin[15] = {36, 35, 34, 33, 32, 31, 2, 3, 4, 5, 6, 7, 8, 9, 10};
 int colPin[8] = {19, 18, 17, 15, 14, 13, 12, 11};
 int rowPinLen = 15;
 int colPinLen = 8;
-
-boolean debugSerial = false; // enable = true; use to view string at different stages
-
 
 void setup() {
   // initialize serial:
@@ -56,30 +51,6 @@ void setup() {
     pinMode(colPin[j], OUTPUT);
     digitalWrite(colPin[j], LOW);
   }
-
-  // test configuration of LED arrays
-  for (int i = 0; i < rowPinLen; i++) {
-    digitalWrite(rowPin[i], HIGH);
-    for (int j = 0; j < colPinLen; j++) {
-      digitalWrite(colPin[j], HIGH);
-      delay(500);
-    }
-    for (int j = 0; j < colPinLen; j++) {
-      digitalWrite(colPin[j], LOW);
-    }
-    digitalWrite(rowPin[i], LOW);
-    delay(2500);
-  }
-
-
-  // Set all pins in use to low so they don't float or anything
-  for (int i = 0; i < rowPinLen; i++) {
-    digitalWrite(rowPin[i], LOW);
-  }
-  for (int j = 0; j < colPinLen; j++) {
-    digitalWrite(colPin[j], LOW);
-  }
-
 }
 
 void loop() {
@@ -87,22 +58,6 @@ void loop() {
   if (stringComplete) {
     Serial.println(inputString); 
 
-    /* Vestigial debug code   
-    // toggle appropriate pin
-    if (!(inputString.startsWith("on ") || inputString.startsWith("off "))) {
-      Serial.println("Malformed command! Try again with 'on 0 1' to turn on LED at position (0,1), for example")
-    } else {
-      while (inputString != "") {
-        lastCommand = inputString.lastIndexOf(' ');
-      }
-    */
-    
-    if (debugSerial == true) {
-      Serial.print("inputString before determining on/off = '");
-      Serial.print(inputString);
-      Serial.print("'");
-      Serial.println();
-    }
     if (inputString.startsWith("of")) {
       pinState = 0;
     } else if (inputString.startsWith("on")) {
@@ -112,35 +67,16 @@ void loop() {
     inputString = inputString.substring(3); 
     
     // now string resembles '0 1x\n' where x is potentially a number in the ones place
-    if (debugSerial == true) {
-      Serial.print("inputString before determining column = '");
-      Serial.print(inputString);
-      Serial.print("'");
-      Serial.println();    
-    }
     colSelect = inputString.charAt(0) - '0';
     inputString = inputString.substring(2);
 
     // now string resembles '1x\n' where x is potentially a number in the ones place
-    if (debugSerial == true) {
-      Serial.print("inputString before determining row = '");
-      Serial.print(inputString);
-      Serial.print("'");
-      Serial.println();    
-    }
     if (inputString.charAt(1) == '\n') {
       rowSelect = inputString.charAt(0) - '0';
     } else {
       rowSelect = (10*(inputString.charAt(0)-'0') + (inputString.charAt(1)-'0'));
     }
     inputString = inputString.substring(1);
-
-    if (debugSerial == true) { 
-      Serial.print("inputString at end of iteration = '");
-      Serial.print(inputString);
-      Serial.print("'");
-      Serial.println();
-    }
 
     Serial.print("Setting LED at (");
     Serial.print(colSelect);
@@ -201,13 +137,13 @@ void pinConfigurator (int enable, int row, int col) {
   }
 }
 
+/*
 void pinConfigurator2() {
-
   // test configuration of LED arrays
   for (int i = 0; i < rowPinLen; i++) {
     digitalWrite(rowPin[i], HIGH);
     for (int j = 0; j < colPinLen; j++) {
-      digitalWrite(colPin[j], HIGH);
+      digitalWrite(colPin[j], );
       delay(500);
     }
     for (int j = 0; j < colPinLen; j++) {
@@ -216,7 +152,6 @@ void pinConfigurator2() {
     digitalWrite(rowPin[i], LOW);
     delay(2500);
   }
-
 
   // Set all pins in use to low so they don't float or anything
   for (int i = 0; i < rowPinLen; i++) {
@@ -227,6 +162,7 @@ void pinConfigurator2() {
   }
   
 }
+*/
 
 /*void pinConfigurator (int enable, int row, int col) {
   static byte framebuffer[15] = {}; // all possible LEDs, one bit per LED, one byte per row
