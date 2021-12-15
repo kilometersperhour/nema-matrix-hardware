@@ -34,8 +34,8 @@ pixelPin and matrixPin map to the pins controlling the gates for the per-pixel a
 */
 //int pixelPin[22] = {28, 29, 26, 25, 24, 23, 8, 5, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 11, 12, 13, 17};
 //int matrixPin[4] = {14, 15, 18, 19};
-int pixelPin[22] = {28, 27, 26, 25, 24, 23, 8, 5, 31, 32, 33, 34, 35, 36, 37, 38, 3, 4, 11, 12, 13, 17};
-int matrixPin[4] = {14, 15, 2, 19};
+int pixelPin[22] = {28, 27, 26, 25, 2, 10, 8, 5, 31, 32, 33, 34, 35, 36, 37, 3, 4, 40, 11, 12, 13, 17};
+int matrixPin[4] = {14, 15, 18, 19};
 int pixelPinLen = 22;
 int matrixPinLen = 4;
 char outputString[100];
