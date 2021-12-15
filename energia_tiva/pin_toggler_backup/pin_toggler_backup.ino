@@ -27,31 +27,34 @@
 String inputString = ""; // a string to hold incoming data
 boolean stringComplete = false; // whether the string is complete
 boolean pinState = 1;
-int colSelect = 0;
-int rowSelect = 0;
-
-int rowPin[22] = {28, 27, 26, 25, 24, 23, 8, 5, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 11, 12, 13, 17};
-//int colPin[4] = {14, 15, 18, 19};
-int colPin[4] = {14, 15, 2, 19};
-int rowPinLen = 22;
-int colPinLen = 4;
+int matrixSelect = 0;
+int pixelSelect = 0;
+/* 
+pixelPin and matrixPin map to the pins controlling the gates for the per-pixel and per-display power
+*/
+//int pixelPin[22] = {28, 29, 26, 25, 24, 23, 8, 5, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 11, 12, 13, 17};
+//int matrixPin[4] = {14, 15, 18, 19};
+int pixelPin[22] = {28, 27, 26, 25, 24, 23, 8, 5, 31, 32, 33, 34, 35, 36, 37, 38, 3, 4, 11, 12, 13, 17};
+int matrixPin[4] = {14, 15, 2, 19};
+int pixelPinLen = 22;
+int matrixPinLen = 4;
 char outputString[100];
 
 void setup() {
   // initialize serial:
   Serial.begin(9600);
-  delay(350);
+  delay(500);
   Serial.println("Serial connection initialized.");
   inputString.reserve(200);
 
   // Set all pins in use to low for initialization test
-  for (int i = 0; i < rowPinLen; i++) {
-    pinMode(rowPin[i], OUTPUT);
-    digitalWrite(rowPin[i], LOW);
+  for (int i = 0; i < pixelPinLen; i++) {
+    pinMode(pixelPin[i], OUTPUT);
+    digitalWrite(pixelPin[i], LOW);
   }
-  for (int j = 0; j < colPinLen; j++) {
-    pinMode(colPin[j], OUTPUT);
-    digitalWrite(colPin[j], LOW);
+  for (int j = 0; j < matrixPinLen; j++) {
+    pinMode(matrixPin[j], OUTPUT);
+    digitalWrite(matrixPin[j], LOW);
   }
 }
 
@@ -69,21 +72,21 @@ void loop() {
     inputString = inputString.substring(3); 
     
     // now string resembles '0 1x\n' where x is potentially a number in the ones place
-    colSelect = inputString.charAt(0) - '0';
+    matrixSelect = inputString.charAt(0) - '0';
     inputString = inputString.substring(2);
 
     // now string resembles '1x\n' where x is potentially a number in the ones place
     if (inputString.charAt(1) == '\n') {
-      rowSelect = inputString.charAt(0) - '0';
+      pixelSelect = inputString.charAt(0) - '0';
     } else {
-      rowSelect = (10*(inputString.charAt(0)-'0') + (inputString.charAt(1)-'0'));
+      pixelSelect = (10*(inputString.charAt(0)-'0') + (inputString.charAt(1)-'0'));
     }
     inputString = inputString.substring(1);
-    sprintf(outputString,"Setting LED at (%d,%d) to state %d.\n",colSelect,rowSelect,pinState);
+    sprintf(outputString,"Setting LED at (%d,%d) to state %d.\n",matrixSelect,pixelSelect,pinState);
 /*    Serial.print("Setting LED at (");
-    Serial.print(colSelect);
+    Serial.print(matrixSelect);
     Serial.print(",");
-    Serial.print(rowSelect);
+    Serial.print(pixelSelect);
     Serial.print(") to state ");
     Serial.print(pinState);
     Serial.println(".");
@@ -92,7 +95,7 @@ void loop() {
     // Until pin configurator written, keep the following print statement
     // should prevent confusion about "why it doesn't work"
     //Serial.println("(Nothing has been configured, please write/enable pin configurator)");
-    pinConfigurator(pinState,colSelect,rowSelect);
+    pinConfigurator(pinState,matrixSelect,pixelSelect);
     Serial.println("Pin reconfigured.");
 
     Serial.println();
@@ -122,29 +125,29 @@ void serialEvent() {
   }
 }
 
-void pinConfigurator (int enable, int col, int row) {
-//  static byte framebuffer[15] = {}; // all possible LEDs, one bit per LED, one byte per row
-//  static byte prevRow; // possibly useful for efficiency
-//  static byte prevCol; // possibly useful for efficiency
+void pinConfigurator (int enable, int matrix, int pixel) {
+//  static byte framebuffer[15] = {}; // all possible LEDs, one bit per LED, one byte per pixel
+//  static byte prevPixel; // possibly useful for efficiency
+//  static byte prevMatrix; // possibly useful for efficiency
   Serial.println("ATTN: AUTO-OFF ENABLED");
-  for (int i = 0; i < colPinLen; i++) { // Disable column
-    digitalWrite(colPin[i], LOW);
+  for (int i = 0; i < matrixPinLen; i++) { // Disable matrix
+    digitalWrite(matrixPin[i], LOW);
     //delay(1000); 
   }
-  for (int i = 0; i < rowPinLen; i++) { // Disable column
-    digitalWrite(rowPin[i], LOW);
+  for (int i = 0; i < pixelPinLen; i++) { // Disable pixels per matrix
+    digitalWrite(pixelPin[i], LOW);
     //delay(1000); 
   } 
-  sprintf(outputString,"Running digitalWrite(%d, %d) given row = %d",rowPin[row],enable,row);
+  sprintf(outputString,"Running digitalWrite(%d, %d) given pixel = %d",pixelPin[pixel],enable,pixel);
   Serial.println(outputString);
-  digitalWrite(rowPin[row], enable);                         // enable new row
-  sprintf(outputString,"Running digitalWrite(%d, %d) given col = %d",colPin[col],enable,col);
+  digitalWrite(pixelPin[pixel], enable);                         // enable new pixel
+  sprintf(outputString,"Running digitalWrite(%d, %d) given matrix = %d",matrixPin[matrix],enable,matrix);
   Serial.println(outputString);
-  digitalWrite(colPin[col], enable);                           // enable new col
+  digitalWrite(matrixPin[matrix], enable);                           // enable new matrix
 
-  // row-light-setting loop to enable new col lights. 7-0 grabs MSB and colPin[i] places it at (0,y)
-/*  for (int i = 0; i < rowPinLen; i++) { 
-    digitalWrite(colPin[i], (framebuffer[row] >> (7-i)) & 0x1);
+  // pixel-light-setting loop to enable new matrix lights. 7-0 grabs MSB and matrixPin[i] places it at (0,y)
+/*  for (int i = 0; i < pixelPinLen; i++) { 
+    digitalWrite(matrixPin[i], (framebuffer[pixel] >> (7-i)) & 0x1);
     //delay(1000);
   }
 */}
@@ -152,43 +155,43 @@ void pinConfigurator (int enable, int col, int row) {
 /*
 void pinConfigurator2() {
   // test configuration of LED arrays
-  for (int i = 0; i < rowPinLen; i++) {
-    digitalWrite(rowPin[i], HIGH);
-    for (int j = 0; j < colPinLen; j++) {
-      digitalWrite(colPin[j], );
+  for (int i = 0; i < pixelPinLen; i++) {
+    digitalWrite(pixelPin[i], HIGH);
+    for (int j = 0; j < matrixPinLen; j++) {
+      digitalWrite(matrixPin[j], );
       delay(500);
     }
-    for (int j = 0; j < colPinLen; j++) {
-      digitalWrite(colPin[j], LOW);
+    for (int j = 0; j < matrixPinLen; j++) {
+      digitalWrite(matrixPin[j], LOW);
     }
-    digitalWrite(rowPin[i], LOW);
+    digitalWrite(pixelPin[i], LOW);
     delay(2500);
   }
 
   // Set all pins in use to low so they don't float or anything
-  for (int i = 0; i < rowPinLen; i++) {
-    digitalWrite(rowPin[i], LOW);
+  for (int i = 0; i < pixelPinLen; i++) {
+    digitalWrite(pixelPin[i], LOW);
   }
-  for (int j = 0; j < colPinLen; j++) {
-    digitalWrite(colPin[j], LOW);
+  for (int j = 0; j < matrixPinLen; j++) {
+    digitalWrite(matrixPin[j], LOW);
   }
   
 }
 */
 
-/*void pinConfigurator (int enable, int row, int col) {
-  static byte framebuffer[15] = {}; // all possible LEDs, one bit per LED, one byte per row
-  static byte prevRow; // possibly useful for efficiency
-//  static byte prevCol; // possibly useful for efficiency
+/*void pinConfigurator (int enable, int pixel, int matrix) {
+  static byte framebuffer[15] = {}; // all possible LEDs, one bit per LED, one byte per pixel
+  static byte prevPixel; // possibly useful for efficiency
+//  static byte prevMatrix; // possibly useful for efficiency
   framebuffer = 
-  for (int i = 0; i < 8; i++) { // Disable column
-    digitalWrite(colPin[i], LOW); 
+  for (int i = 0; i < 8; i++) { // Disable matrix
+    digitalWrite(matrixPin[i], LOW); 
   } 
-  digitalWrite(prevRow, LOW);                                // Disable row afterward
-  digitalWrite(rowPin[row], enable);                         // enable new row
-  // row-light-setting loop to enable new col lights. 7-0 grabs MSB and colPin[i] places it at (0,y)
+  digitalWrite(prevpixel, LOW);                                // Disable pixel afterward
+  digitalWrite(pixelPin[pixel], enable);                         // enable new pixel
+  // pixel-light-setting loop to enable new matrix lights. 7-0 grabs MSB and matrixPin[i] places it at (0,y)
   for (int i = 0; i < 8; i++) { 
-    digitalWrite(colPin[i], (framebuffer[row] >> (7-i)) & 0x1);
+    digitalWrite(matrixPin[i], (framebuffer[pixel] >> (7-i)) & 0x1);
   }
 }*/
 

@@ -94,7 +94,7 @@ void loop() {
       //delay(1000);
     }
     prevRow = row;
-    delay(67);
+    delayMicroseconds(1333);
   }
   //delay(1);
 }
