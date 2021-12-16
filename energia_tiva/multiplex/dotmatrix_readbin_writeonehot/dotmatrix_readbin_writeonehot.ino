@@ -40,30 +40,7 @@ void setup() {
   }
 }
 
-
-int out_pixel[15] = {40, 39, 38, 37, 26, 35, 34, 33, 32, 31, 15, 14, 13, 12, 11};
-int out_matrix[8] = {2, 3, 4, 5, 6, 7, 8, 9};
-int out_pixel_len = 15;
-int out_matrix_len = 8;
-int waittime = 60 * 1000 / (out_pixel_len * out_matrix_len);
-
-// all possible LEDs, one bit per LED, one byte per pixel
-static byte framebuffer[15] =   {B00010001,
-                                 B00100010,
-                                 B00110011,
-                                 B01000100,
-                                 B01010101,
-                                 B01100110,
-                                 B01110111,
-                                 B10001000,
-                                 B10011001,
-                                 B10101010,
-                                 B10111011,
-                                 B11001100,
-                                 B11011101,
-                                 B11101110,
-                                 B11111111
-                                };
+int waittime = 4; // 4ms = <62.5Hz/display, 25% duty cycle
 
 // ref: https://cdn.discordapp.com/attachments/882335631102079006/896048973012402226/image0.jpg
 uint32_t zero  = (B00000110 << 24) + (B10011001 << 16) + (B10011001 << 8) + B10010110; // little endian nybbles, L to R, most sig. to least sig.
@@ -77,10 +54,7 @@ uint32_t seven = (B00001000 << 24) + (B10000100 << 16) + (B00100001 << 8) + B000
 uint32_t eight = (B00000110 << 24) + (B10011001 << 16) + (B01101001 << 8) + B10010110;
 uint32_t nine  = (B00000110 << 24) + (B00010001 << 16) + (B01111001 << 8) + B10010110;
 
-uint8_t numberBinary[15] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
-
 uint32_t numberGlyphs[10] = {zero, one, two, three, four, five, six, seven, eight, nine};
-uint8_t serialOutput;
 
 void loop() {
   // put your main code here, to run repeatedly:
