@@ -27,7 +27,7 @@ uint32_t matrixFramebuffer[4] =  {((B00000000 << 24) + (B00111111 << 16) + (B111
 void setup() {
   // put your setup code here, to run once:
   if (debug) {
-    Serial.begin(57600);
+    Serial.begin(115200);
   }
   // Set all pins in use to low for initialization test
   for (int i = 0; i < pixelPinLen; i++) {
