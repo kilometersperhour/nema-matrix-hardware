@@ -8,7 +8,7 @@
 */
 
 int matrixSelect = 0;
-int pixelSelect = 16;
+int pixelSelect = 17;
 int pixelPin[22] = {28, 27, 26, 25, 2, 10, 8, 5, 31, 32, 33, 34, 35, 36, 37, 39, 38, 40, 11, 12, 13, 17};
 int matrixPin[4] = {14, 15, 18, 19};
 int pixelPinLen = 22;
@@ -106,24 +106,28 @@ void loop() {
         digitalWrite(pixelPin[pixel], LOW); // Disable pixel by pixel, clean slate
       }
 
-      for (int pixel = 0; pixel < pixelPinLen; pixel++) { // per-pixel drawing loop
-        // This is a pixel-light-setting loop to enable new matrix lights.
-        // (7-0) grabs MSB and matrixPin[i] places it at (0,y), for example
-        //          digitalWrite(pixelPin[pixel], (matrixFramebuffer[matrix] >> pixel) & 0x1);
-        digitalWrite(pixelPin[pixel], ((numberGlyphs[pixelSelect % 10] >> pixel) & 0x1));
-        if (debug > 1) {
-          Serial.print("pixel ");
-          Serial.print(pixel);
-          Serial.print(" matrix ");
-          Serial.print(matrix);
-          Serial.print(" state ");
-          Serial.print((numberGlyphs[pixelSelect % 10] >> pixel) & 0x1);
-          Serial.print(" numeral ");
-          Serial.println(pixelSelect % 10);
+      for (int i = 0; i < 10; i++) {
+        for (int pixel = 0; pixel < pixelPinLen; pixel++) { // per-pixel drawing loop
+          // This is a pixel-light-setting loop to enable new matrix lights.
+          // (7-0) grabs MSB and matrixPin[i] places it at (0,y), for example
+          //          digitalWrite(pixelPin[pixel], (matrixFramebuffer[matrix] >> pixel) & 0x1);
+          digitalWrite(pixelPin[pixel], ((numberGlyphs[i] >> pixel) & 0x1));
+          if (debug > 1) {
+            Serial.print("pixel ");
+            Serial.print(pixel);
+            Serial.print(" matrix ");
+            Serial.print(matrix);
+            Serial.print(" state ");
+            Serial.print((numberGlyphs[pixelSelect % 10] >> pixel) & 0x1);
+            Serial.print(" numeral ");
+            Serial.println(pixelSelect % 10);
+            
+      
+          }
+          
         }
-
+        delay(1000);
       }
-      delay(1000);
       digitalWrite(matrixPin[matrix], LOW); // disable the current matrix, comment out to watch pixels blink out
       Serial.println("Pin reconfigured.");
 
