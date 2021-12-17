@@ -1,3 +1,8 @@
+/*Miles Martin
+
+This code was used to test the effect of high input impedance of GPIO pins controlling the light-level
+of LEDs on the LED matrix. 
+*/
 
 int rowPin[22] = {28, 27, 26, 25, 24, 23, 8, 5, 31, 32, 33, 34, 35, 36, 37, 38, 3, 4, 11, 12, 13, 17}; // transpose 3 & 4?
 //int colPin[4] = {14, 15, 18, 19};

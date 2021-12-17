@@ -1,3 +1,22 @@
+// Note from Miles Martin:
+// This code was not used in the final project but was referenced in later unit-testing code,
+// so it has been included for the grader to assess and assign value at his discretion.
+// The portion referenced is found within the function GPIOJTAGTestCallback(), where internal 
+// registers of the Tiva C Launchpad board are set, cleared, or reset to provide alternate 
+// functions to pins such as the JTAG pins, as demonstrated here. An alternate function of the 
+// JTAG pins is to function as GPIO, as might be used in this project. This sample of code was
+// considered possibly helpful because the high output voltage of certain pins on the 
+// microcontroller board was not consistently the logic-high 3.3V expected. This manifested on 
+// on the LED matrix as dimly/barely toggling the gate of the transistors controlling lighting
+// the LEDs of the matrix. For example, a 1V output was still within the small-signal range of 
+// the NMOS transistors used in this project, so the LED barely responded to the toggling of 
+// such pins. It has not yet been determined whether the following code would be helpful in 
+// providing the solution needed (logic-high voltages at ther nominal values for all utilized 
+// pins), but it does provide a possible explanation for the board's shortcomings, as GPIO is
+// universally assignable using the Arduino Language's function pinMode() function; the 
+// edge-case is not handled by the pinMode function or the library code for the Tiva C Launchpad
+// board and must be manually handled for these exceptional pins.
+
 //*****************************************************************************
 //
 // gpio_jtag.c - Example to demonstrate recovering the JTAG interface.

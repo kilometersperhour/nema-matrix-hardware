@@ -1,4 +1,13 @@
-/*
+// Note from Miles Martin
+// The push-button section of the code was irrelevant, and this code was only
+// ever functionally intended to provide serial output to indicate the size of 
+// variable types that might later be used in the project. 
+
+// For exactitude and clarity of coding, the intXX_t type was ultimately used 
+// in other source files because the types are platform-agnostic and are (in 
+// many cases) guaranteed to be allocated XX bits.
+
+/*  
   DigitalReadSerial with on-board Pushbutton
   Reads a digital input on pin 5, prints the result to the serial monitor 
  

@@ -1,3 +1,13 @@
+/*Miles Martin
+
+For the most part, this code was used to test whether or not all LEDs across
+the matrices were connected correctly, but it also has the additional function
+of implementing code sampled from the "gpio_jtag" example previously mentioned, 
+for the intent of determining if setting values in the HWREG registers helped
+pull the GPIO of certain registers closer to their nominal logic-high voltage
+of 3.3V. It was determined that this did not help, at least as presented here.
+*/
+
 // These includes from gpio_jtag example, with modified code included
 #include <stdbool.h>
 #include <stdint.h>

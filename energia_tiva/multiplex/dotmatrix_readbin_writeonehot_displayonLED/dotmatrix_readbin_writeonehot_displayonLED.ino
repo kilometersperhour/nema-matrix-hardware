@@ -1,4 +1,20 @@
+/*
+Miles Martin
 
+This code was initially written to update GPIO voltage levels to toggle LEDs in an LED matrix.
+The intention was to display decimal glyphs on a minimal test-bench of 8 LEDs with a relocatable
+ground connection, used to verify the output of the matrix row-by-row. This was not a suitable 
+configuration for multiplexing at the scale of the project, but it inspired a great deal of 
+the later code responsible for multiplexing the display in the design review as presented 
+during finals week of December 2021.
+
+Due to a misconfiguration and misunderstanding of the testbench hardware configuration. 
+Some LEDs were dimmer than other lookalikes, and as a result, time was spent troubleshooting 
+that hardware rather than the software driving it. Ultimately the assortment of LEDs had some 
+that were just dim under the same load and nothing was wrong. This led to the reconfiguration 
+of the code to perform serial writes instead of GPIO toggles, to ensure nothing was 
+algorithmically incorrect on the software side.
+*/
 
 void setup() {
   // put your setup code here, to run once:

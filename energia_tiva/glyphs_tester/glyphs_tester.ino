@@ -1,4 +1,34 @@
+/*
 
+This code was originally implemented to test the programmer's accuracy when manually defining
+the binary-encoded decimal glyphs shown on the LED matrix used in the 2021-2022 senior 
+capstone project of Miles Martin and Ally DiFilippo. 
+
+Pin mappings and serial debug output are not representative of the final product and slow down
+the execution of the program significantly, affecting multiplexing speed and quality.
+
+This code, as written, writes serial output at 9600 baud, writing representations of each glyph over
+the Serial Monitor built into the Energia IDE. An activated LED was represented by "o " 
+whereas a deactivated LED was represented by two spaces ("  "). 
+Line by line each glyph was printed. Sample output can be seen below:
+
+00,3:   o o   
+04,3: o     o 
+08,3:       o 
+12,3:     o   
+16,3:       o 
+20,3: o     o 
+24,3:   o o   
+
+
+The ordered pair (xx,y) at the beginning of the line represents:
+	xx: the value of the iterator i for the duration of the row. This was displayed using two 
+	place values because the number displayed here could be as large as 24.
+	y: the numeral equivalent to the glyph being printed. Helpful to see if what is suppposed 
+	to be displayed matches what would be represented by the glyph.
+
+
+*/
 
 void setup() {
   // put your setup code here, to run once:

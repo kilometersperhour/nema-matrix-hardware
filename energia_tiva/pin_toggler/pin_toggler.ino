@@ -1,22 +1,34 @@
 /*
-  Based on "Serial Event example"
-
-  When new serial data arrives, this sketch adds it to a String.
-  When a newline is received, the loop prints the string and 
-  clears it.
-
-  A good test for this is to try it with a GPS receiver 
-  that sends out NMEA 0183 sentences. 
+  Based on "Serial Event"
 
   Created 9 May 2011
   by Tom Igoe
   Modified 24 April 2013
   by Sean Alvarado
+  Modified October 2021
+  by Miles Martin
 
-  Hardware Required:
-  * MSP-EXP430G2 LaunchPad
+  When new serial data arrives, the original sketch added it to a String.
+  This behavior was adapted to read in more purposeful information and extract an 
+  ordered pair from it. The ordered pair would be used to determine the 
+  "coordinates" of the pixel to light. A pixel located in row y within column x
+  would be activated with "on x y" or "on x yy". The code can handle both formats
+  because at the time of writing, the hardware requirements necessitated access 
+  to 8 columns and 15 rows. 
   
-  This example code is in the public domain.
+  This "lineage" of code was most useful when testing connectivity issues 
+  between the matrix displays and the microcontroller, as the breadboarded jumpers could
+  sometimes come loose. Later, the hardware was upgraded to thicker-gauge jumpers that 
+  limited the occurrence of these issues.
+
+  The example code sampled is in the public domain and is included with the Energia 
+  IDE which programs the Tiva C Launchpad board used in the capstone product presented
+  during the mid-December 2021 design review. This is a checkpoint int the pin_toggler 
+  source history at which point a "backup" counterpart was created and the changes 
+  made in the backup file ended up being more desirable than the original source.
+  Changes were made to the copy with "backup" appended because the Energia IDE is 
+  particular about the names and folder structure of source files, so it was best to 
+  modify the duplicate (i.e. the backup).
 
 */
 
