@@ -126,7 +126,7 @@ void loop() {
           }
           
         }
-        delay(1000);
+        delay(1000);`
       }
       digitalWrite(matrixPin[matrix], LOW); // disable the current matrix, comment out to watch pixels blink out
       Serial.println("Pin reconfigured.");

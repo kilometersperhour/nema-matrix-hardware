@@ -1,43 +1,24 @@
 /*
-  Based on "Serial Event"
+  Based on "Serial Event example"
+
+  When new serial data arrives, this sketch adds it to a String.
+  When a newline is received, the loop prints the string and 
+  clears it.
+
+  A good test for this is to try it with a GPS receiver 
+  that sends out NMEA 0183 sentences. 
 
   Created 9 May 2011
   by Tom Igoe
   Modified 24 April 2013
   by Sean Alvarado
-  Modified December 2021
-  by Miles Martin
 
-  When new serial data arrives, the original sketch added it to a String.
-  This behavior was adapted to read in more purposeful information and extract an 
-  ordered pair from it. The ordered pair would be used to determine the 
-  "coordinates" of the pixel to light. A pixel located in row y within column x
-  would be activated with "on x y" or "on x yy". The code can handle both formats
-  because at the time of writing, the hardware requirements necessitated access 
-  to 8 columns and 15 rows. 
+  Hardware Required:
+  * MSP-EXP430G2 LaunchPad
   
-  These inputs were later adapted to a "pixel" and "matrix" format, away from 
-  "rows" and "columns" respectively. This was due to the realization that all bulbs 
-  ("pixels") per matrix all shared a common lead. (Saying "common cathode" or 
-  "common anode" would not be accurate because the bulbs were full-wave rectified 
-  by their built-in driver.) 
-  
-  This "lineage" of code was most useful when testing connectivity issues 
-  between the matrix displays and the microcontroller, as the breadboarded jumpers could
-  sometimes come loose. Later, the hardware was upgraded to thicker-gauge jumpers that 
-  limited the occurrence of these issues.
-
-  The example code sampled is in the public domain and is included with the Energia 
-  IDE which programs the Tiva C Launchpad board used in the capstone product presented
-  during the mid-December 2021 design review. This is a checkpoint int the pin_toggler 
-  source history at which point a "backup" counterpart was created and the changes 
-  made in the backup file ended up being more desirable than the original source.
-  Changes were made to the copy with "backup" appended because the Energia IDE is 
-  particular about the names and folder structure of source files, so it was best to 
-  modify the duplicate (i.e. the backup).
+  This example code is in the public domain.
 
 */
-
 
 /* Things to do:
  * Error checking
@@ -48,6 +29,8 @@ boolean stringComplete = false; // whether the string is complete
 boolean pinState = 1;
 int matrixSelect = 0;
 int pixelSelect = 0;
+
+char outputString[100];
 /* 
 pixelPin and matrixPin map to the pins controlling the gates for the per-pixel and per-display power
 */
@@ -57,7 +40,6 @@ int pixelPin[22] = {28, 27, 26, 25, 2, 10, 8, 5, 31, 32, 33, 34, 35, 36, 37, 3, 
 int matrixPin[4] = {14, 15, 18, 19};
 int pixelPinLen = 22;
 int matrixPinLen = 4;
-char outputString[100];
 
 void setup() {
   // initialize serial:
