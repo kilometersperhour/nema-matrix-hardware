@@ -7,27 +7,26 @@
       Add better comments
       Make functions
 */
+// Number of glyphs encoded for display on any given matrix
+#define GLYPHS_COUNT 12
+// number of microseconds to wait before refreshing all matrices
+#define REFRESH_WAIT 400 // microseconds
+// Enable serial/UART print statements
+#define DEBUG false
+#define VERBOSE false
 
-int matrixSelect = 0;
-int pixelSelect = 17;
-const int pixelPin[22] = {28, 27, 26, 25, 2, 10, 8, 5, 31, 32, 33, 34, 35, 36, 37, 39, 38, 40, 11, 12, 13, 17};
-const int matrixPin[4] = {14, 15, 18, 19};
 const int pixelPinLen = 22;
 const int matrixPinLen = 4;
+const int pixelPin[pixelPinLen] = {28, 27, 26, 25, 2, 10, 8, 5, 31, 32, 33, 34, 35, 36, 37, 39, 38, 40, 11, 12, 13, 17};
+const int matrixPin[matrixPinLen] = {14, 15, 18, 19};
 
-String inputString = ""; // a string to hold incoming data
+String inputString = "+12:00"; // a string to hold incoming data
 char outputString[100];
 boolean stringComplete = false; // whether the string is complete
 boolean pinState = 1;
 
-int debug = 0;
+int matrixGlyphs[matrixPinLen] = {0, 0, 0, 0}; // set time by reading serial
 
-uint32_t matrixFramebufferMask[4] = {(B00000000 << 24) + (B00111111 << 16) + (B11111111 << 8) + B11111111}; //
-uint32_t matrixFramebuffer[4] =  {((B00000000 << 24) + (B00111111 << 16) + (B11111111 << 8) + B11111111),
-                                  ((B00000000 << 24) + (B00111111 << 16) + (B11111111 << 8) + B11111111),
-                                  ((B00000000 << 24) + (B00111111 << 16) + (B11111111 << 8) + B11111111),
-                                  ((B00000000 << 24) + (B00100001 << 16) + (B00100000 << 8) + B01001000), // one
-                                 };
 void setMuxingPinsLow();
 
 void parseTimeString();
@@ -44,109 +43,106 @@ void setup() {
 int waittime = 4; // 4ms = <62.5Hz/display, 25% duty cycle
 
 // ref: https://cdn.discordapp.com/attachments/882335631102079006/896048973012402226/image0.jpg
-uint32_t zero = (B00000000 << 24) + (B00010011 << 16) + (B01100100 << 8) + B11010110;
-uint32_t one = (B00000000 << 24) + (B00010100 << 16) + (B00010010 << 8) + B00100100;
-uint32_t two = (B00000000 << 24) + (B00111010 << 16) + (B10010000 << 8) + B01010110;
-uint32_t three = (B00000000 << 24) + (B00010011 << 16) + (B00010000 << 8) + B01010110;
-uint32_t four = (B00000000 << 24) + (B00100001 << 16) + (B11100101 << 8) + B01101000;
-uint32_t five = (B00000000 << 24) + (B00010011 << 16) + (B00100011 << 8) + B10011111;
-uint32_t six = (B00000000 << 24) + (B00010011 << 16) + (B01011100 << 8) + B10010110;
-uint32_t seven = (B00000000 << 24) + (B00001010 << 16) + (B10010000 << 8) + B01001111;
-uint32_t eight = (B00000000 << 24) + (B00010011 << 16) + (B01011000 << 8) + B11010110;
-uint32_t nine = (B00000000 << 24) + (B00010001 << 16) + (B00111000 << 8) + B11010110;
+const uint32_t zero = (B00000000 << 24) + (B00010011 << 16) + (B01100100 << 8) + B11010110;
+const uint32_t one = (B00000000 << 24) + (B00010100 << 16) + (B00010010 << 8) + B00100100;
+const uint32_t two = (B00000000 << 24) + (B00111010 << 16) + (B10010000 << 8) + B01010110;
+const uint32_t three = (B00000000 << 24) + (B00010011 << 16) + (B00010000 << 8) + B01010110;
+const uint32_t four = (B00000000 << 24) + (B00100001 << 16) + (B11100101 << 8) + B01101000;
+const uint32_t five = (B00000000 << 24) + (B00010011 << 16) + (B00100011 << 8) + B10011111;
+const uint32_t six = (B00000000 << 24) + (B00010011 << 16) + (B01011100 << 8) + B10010110;
+const uint32_t seven = (B00000000 << 24) + (B00001010 << 16) + (B10010000 << 8) + B01001111;
+const uint32_t eight = (B00000000 << 24) + (B00010011 << 16) + (B01011000 << 8) + B11010110;
+const uint32_t nine = (B00000000 << 24) + (B00010001 << 16) + (B00111000 << 8) + B11010110;
+const uint32_t allOff = (B00000000 << 24) + (B00000000 << 16) + (B00000000 << 8) + B00000000;
+const uint32_t allOn = (B00000000 << 24) + (B00111111 << 16) + (B11111111 << 8) + B11111111;
+// if adding/removing glyphs, be sure to update GLYPHS_COUNT
 
-uint32_t numberGlyphs[10] = {zero, one, two, three, four, five, six, seven, eight, nine};
-
-
+// maybe change to "glyphs" with indices 10+ as blank, all pixels, etc.
+const uint32_t numberGlyphs[GLYPHS_COUNT] = {zero, one, two, three, four, five, six, seven, eight, nine, allOff, allOn};
 
 void loop() {
   // put your main code here, to run repeatedly:
 
-  while (1) { // big loop
-    if (stringComplete) {
+  if (true || stringComplete) {
+    
+    if (DEBUG) {
+      if (VERBOSE) {
+        Serial.println("top"); // todo remove
+      }
       Serial.println(inputString); // 
+    }
+    
+    if (inputString == "") {
+      stringComplete = false;
+    } else if (inputString.startsWith("+")) { // TODO make a validity tester function
+      stringComplete = true;
 
-      if (inputString.startsWith("+") || inputString.startsWith("-")) {
-        stringComplete = false;
-      } else {
-        stringComplete = true;
+      for (int x = 0; x < matrixPinLen; x++) { 
+        matrixGlyphs[x] = 0;
       }
-      // delete [+] or [-] at beginning of string
-      inputString = inputString.substring(3);
-
-      // now string resembles 'xx:yy\n' where x is potentially a number in the ones place
-      if (inputString.charAt(2) == ':') {
-        pixelSelect = (10 * (inputString.charAt(0) - '0') + (inputString.charAt(1) - '0'));
-      }
-      inputString = inputString.substring(3);
-
-      // now string resembles '1x\n' where x is potentially a number in the ones place
-      if (inputString.charAt(1) == '\n') {
-        pixelSelect = inputString.charAt(0) - '0';
-      } else {
-        pixelSelect = (10 * (inputString.charAt(0) - '0') + (inputString.charAt(1) - '0'));
-      }
-      inputString = inputString.substring(2);
-      if (debug) {
-        sprintf(outputString, "Setting LED at (%d,%d) to state %d.\n", matrixSelect, pixelSelect, pinState);
-        Serial.println(outputString);
-      }
-
-      Serial.println();
-      // clear the string:
-      inputString = "";
+    } else {
       stringComplete = false;
     }
-    for (int matrix = 0; matrix < matrixPinLen; matrix++) { // per-matrix drawing loop
-      digitalWrite(matrixPin[matrix], HIGH); // disable the current matrix, comment out to watch pixels blink out
-
-      for (int pixel = 0; pixel < pixelPinLen; pixel++) { // per-pixel deactivation loop
-        digitalWrite(pixelPin[pixel], LOW); // Disable pixel by pixel, clean slate
-      }
-
-      for (int i = 0; i < 10; i++) {
-        delayMicroseconds(waittime*100);//delay(1);
-        for (int pixel = 0; pixel < pixelPinLen; pixel++) { // per-pixel drawing loop
-          // This is a pixel-light-setting loop to enable new matrix lights.
-          // (7-0) grabs MSB and matrixPin[i] places it at (0,y), for example
-          //          digitalWrite(pixelPin[pixel], (matrixFramebuffer[matrix] >> pixel) & 0x1);
-          if (matrix == 0) {
-            digitalWrite(pixelPin[pixel], ((numberGlyphs[7] >> pixel) & 0x1));
-          }
-          if (matrix == 1) {
-            digitalWrite(pixelPin[pixel], ((numberGlyphs[8] >> pixel) & 0x1));
-          }
-          if (matrix == 2) {
-            digitalWrite(pixelPin[pixel], ((numberGlyphs[9] >> pixel) & 0x1));
-          }
-          if (matrix == 3) {
-            digitalWrite(pixelPin[pixel], ((numberGlyphs[0] >> pixel) & 0x1));
-          }
-          if (debug > 1) {
-            Serial.print("pixel ");
-            Serial.print(pixel);
-            Serial.print(" matrix ");
-            Serial.print(matrix);
-            Serial.print(" state ");
-            Serial.print((numberGlyphs[pixelSelect % 10] >> pixel) & 0x1);
-            Serial.print(" numeral ");
-            Serial.println(i);
-            
-      
-          }
-          
-        }
-        //delayMicroseconds(waittime*100);
-      }      
-      digitalWrite(matrixPin[matrix], LOW); // disable the current matrix, comment out to watch pixels blink out
-      
-      if (debug > 0) {
-        Serial.print("Pin ");
-        Serial.print(matrix);
-        Serial.println(" reconfigured.");
-      }
+    // now string resembles '+[01][0-9]:[0-9][0-9]\n' 
+    if (inputString.charAt(3) == ':') {
+      matrixGlyphs[0] = (inputString.charAt(1) - '0');
+      matrixGlyphs[1] = (inputString.charAt(2) - '0');
+      matrixGlyphs[2] = (inputString.charAt(4) - '0');
+      matrixGlyphs[3] = (inputString.charAt(5) - '0');
     }
-
+    if (DEBUG) {
+      sprintf(outputString, "Setting matrices to show %d%d:%d%d given ", matrixGlyphs[0], matrixGlyphs[1], matrixGlyphs[2], matrixGlyphs[3]);
+      Serial.println((outputString+inputString));
+      Serial.println();
+    }
+    // clear the string:
+    inputString = "";
+    stringComplete = false;
+  }
+  for (int matrix = 0; matrix < matrixPinLen; matrix++) { // per-matrix drawing loop
+    digitalWrite(matrixPin[matrix], HIGH); // disable the current matrix, comment out to watch pixels blink out
+    for (int pixel = 0; pixel < pixelPinLen; pixel++) { // per-pixel deactivation loop
+      digitalWrite(pixelPin[pixel], LOW); // Disable pixel by pixel, clean slate
+    }
+    for (int i = 0; i < 10; i++) {
+      delayMicroseconds(REFRESH_WAIT);//delay(1); //100us
+      for (int pixel = 0; pixel < pixelPinLen; pixel++) { // per-pixel drawing loop
+        // This is a pixel-light-setting loop to enable new matrix lights.
+        // (7-0) grabs MSB and matrixPin[i] places it at (0,y), for example
+        //          digitalWrite(pixelPin[pixel], (matrixFramebuffer[matrix] >> pixel) & 0x1);
+        if (matrix == 0) { // if 'plexing tens of hours
+          digitalWrite(pixelPin[pixel], ((numberGlyphs[matrixGlyphs[0]] >> pixel) & 0x1));
+        }
+        if (matrix == 1) { // if 'plexing ones of hours
+          digitalWrite(pixelPin[pixel], ((numberGlyphs[matrixGlyphs[1]] >> pixel) & 0x1));
+        }
+        if (matrix == 2) { // if 'plexing tens of minutes
+          digitalWrite(pixelPin[pixel], ((numberGlyphs[matrixGlyphs[2]] >> pixel) & 0x1));
+        }
+        if (matrix == 3) { // if 'plexing ones of minutes
+          digitalWrite(pixelPin[pixel], ((numberGlyphs[matrixGlyphs[3]] >> pixel) & 0x1));
+        }
+        if (DEBUG && VERBOSE) {
+          Serial.print("pixel ");
+          Serial.print(pixel);
+          Serial.print(" matrix ");
+          Serial.print(matrix);
+          Serial.print(" numeral ");
+          Serial.println(i);
+          
+    
+        }
+        
+      }
+      //delayMicroseconds(waittime*100);
+    }      
+    digitalWrite(matrixPin[matrix], LOW); // disable the current matrix, comment out to watch pixels blink out
+    
+    if (DEBUG && VERBOSE) {
+      Serial.print("Pin ");
+      Serial.print(matrix);
+      Serial.println(" reconfigured.");
+    }
   }
 }
 
