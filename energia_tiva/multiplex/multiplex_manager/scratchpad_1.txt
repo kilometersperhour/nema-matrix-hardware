@@ -1,0 +1,87 @@
+void matrixOn(int matrix) {
+
+	digitalWrite(matrixPin[matrix], HIGH); // enable the current matrix
+
+}
+
+
+void matrixOff(int matrix) {
+
+	digitalWrite(matrixPin[matrix], LOW); // disable the current matrix
+
+}
+
+// AND with pixel at framebuffer[i] to determine HIGH or LOW, for pixel in display position "i"
+void matrixWriteValue(int framebuffer[], int value) {
+	for (int i = 0; i < pixelPinLen; i++) {
+		digitalWrite(pixelPin[i], ((numberGlyphs[value] >> i) & 0x1)); 
+	}
+}
+
+void debugMatrixWriteValue(int framebuffer[], int value) {
+	for (int i = 0; i < pixelPinLen; i++) {
+		digitalWrite(pixelPin[i], ((debugMatrixFramebuffer[value] >> i) & 0x1)); 
+	}
+
+}
+
+void pixelOn(int pixel) {
+
+	digitalWrite(pixelPin[pixel], HIGH); // enable the current matrix
+
+}
+
+
+void pixelOff(int framebuffer[]) {
+
+	digitalWrite(pixelPin[pixel], LOW); // disable the current matrix
+
+}
+
+
+for (int matrix = 0; matrix < matrixPinLen; matrix++) { // per-matrix drawing loop
+  digitalWrite(matrixPin[matrix], HIGH); // disable the current matrix, comment out to watch pixels blink out
+
+  for (int pixel = 0; pixel < pixelPinLen; pixel++) { // per-pixel deactivation loop
+    digitalWrite(pixelPin[pixel], LOW); // Disable pixel by pixel, clean slate
+  }
+  // make function: void writeNumeralsAll(int select, int h10, int h01, int m10, int m01); 
+  for (int i = 0; i < 10; i++) {
+    delayMicroseconds(waittime*100);//delay(1);
+    for (int pixel = 0; pixel < pixelPinLen; pixel++) { // per-pixel drawing loop
+      // This is a pixel-light-setting loop to enable new matrix lights.
+      // (7-0) grabs MSB and matrixPin[i] places it at (0,y), for example
+      //          digitalWrite(pixelPin[pixel], (matrixFramebuffer[matrix] >> pixel) & 0x1);
+      if (matrix == 0) {
+        digitalWrite(pixelPin[pixel], ((numberGlyphs[1] >> pixel) & 0x1));
+      }
+      if (matrix == 1) {
+        digitalWrite(pixelPin[pixel], ((numberGlyphs[3] >> pixel) & 0x1));
+      }
+      if (matrix == 2) {
+        digitalWrite(pixelPin[pixel], ((numberGlyphs[3] >> pixel) & 0x1));
+      }
+      if (matrix == 3) {
+        digitalWrite(pixelPin[pixel], ((numberGlyphs[7] >> pixel) & 0x1));
+      }
+      if (debug > 1) {
+        Serial.print("pixel ");
+        Serial.print(pixel);
+        Serial.print(" matrix ");
+        Serial.print(matrix);
+        Serial.print(" state ");
+        Serial.print((numberGlyphs[pixelSelect % 10] >> pixel) & 0x1);
+        Serial.print(" numeral ");
+        Serial.println(i);      
+      } 
+    }
+  }      
+
+  digitalWrite(matrixPin[matrix], LOW); // disable the current matrix, comment out to watch pixels blink out
+  
+  if (debug > 0) {
+    Serial.print("Pin ");
+    Serial.print(matrix);
+    Serial.println(" reconfigured.");
+  }
+}
