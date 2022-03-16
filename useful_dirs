@@ -1,0 +1,7 @@
+/home/nema/Documents/PlatformIO/Projects/220303-225705-lptm4c123gh6pm/src
+~/Documents/PlatformIO/Projects/220303-225705-lptm4c123gh6pm/.pio/build/lptm4c123gh6pm
+/home/nema/.platformio/packages/tool-openocd/scripts/board/ti_ek-tm4c123gxl.cfg
+~/miles_coding/nema-matrix-hardware/energia_tiva/multiplex/multiplex_manager
+
+# this runs a VS code instance as the superuser to get privileges to write to the serial port the board gets its code over
+sudo code . --no-sandbox --user-data-dir /home/nema/.vscode/
