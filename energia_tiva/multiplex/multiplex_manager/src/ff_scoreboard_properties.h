@@ -12,8 +12,7 @@
 
 const int pixelPin[PIXELS_PER_MATRIX] = {28, 27, 26, 25, 2, 10, 8, 5, 31, 32, 33, 34, 35, 36, 37, 39, 38, 40, 11, 12, 13, 17};
 const int matrixPin[MATRICES_PER_DISPLAY] = {14, 15, 18, 19};
-extern int matrixValue[MATRICES_PER_DISPLAY] = {12, 12, 12, 12}; // set time by reading serial
-// TODO set to {10, 10, 10, 10} for final, so matrix is blank on failed initial read
+int glyphIndex[MATRICES_PER_DISPLAY] = {10, 10, 10, 10}; // set time by reading serial
 const int numberIndexInString[MATRICES_PER_DISPLAY] = {1, 2, 4, 5}; // W, X, Y, Z in "+WX:YZ"
 
 // ref: https://cdn.discordapp.com/attachments/882335631102079006/896048973012402226/image0.jpg

@@ -38,11 +38,11 @@ boolean timeStringValid(String theInput) {
   int indexToTest = -1; // an invalid index to start; should be assigned in loop
   boolean isValid = true; // assume valid until proved invalid
 
-  for (int pos = numberIndexInString[0]; pos < numberIndexInString[(MATRICES_PER_DISPLAY-1)]; pos++) { // only checks positions 1, 2, 4, 5
+  for (int pos = numberIndexInString[0]; pos < numberIndexInString[(MATRICES_PER_DISPLAY-1)]; pos++) { // checks positions 1, 2, 4, 5
         
     indexToTest = theInput.charAt(pos) - '0';
         
-    if (pos == 3) { 
+    if (pos == 3) { // skip position 3
       pos++; 
     }
         
@@ -60,13 +60,14 @@ boolean timeStringValid(String theInput) {
   }
 }
 
-void setMatrixValue(int *matrixIndex, String theString, int pos) {
+// sets an index in an array with the glyph index that a matrix will take on 
+void setGlyphIndex(int *glyphIndex, String theString, int pos) {
   int value = (theString.charAt(pos) - '0');
   if ((0 <= value)  && (value < GLYPHS_COUNT)) {
-    *matrixIndex = value;
+    *glyphIndex = value;
   } 
   else {  // error character: GLYPH_ALL_ON (so, 11). should not be possible if timeStringValid(inputString) == true
-    *matrixIndex = 11;
+    *glyphIndex = 11;
   }
 
   if (DEBUG) {
