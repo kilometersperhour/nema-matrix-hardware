@@ -45,7 +45,7 @@ void loop() {
     }
 
     stringComplete = (inputStringValid(inputString) && timeStringValid(inputString));
-    // now string resembles '+[0-:][0-:]:[0-:][0-:]\n' 
+    // now string resembles the following PCRE: '+[0-:][0-:]:[0-:][0-:]\n' 
     if (stringComplete == true) {
       setGlyphIndex(&glyphIndex[0], inputString, numberIndexInString[0]);
       setGlyphIndex(&glyphIndex[1], inputString, numberIndexInString[1]);

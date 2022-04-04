@@ -66,8 +66,8 @@ void setGlyphIndex(int *glyphIndex, String theString, int pos) {
   if ((0 <= value)  && (value < GLYPHS_COUNT)) {
     *glyphIndex = value;
   } 
-  else {  // error character: GLYPH_ALL_ON (so, 11). should not be possible if timeStringValid(inputString) == true
-    *glyphIndex = 11;
+  else {  // error character: GLYPH_ALL_ON (so, 10). should not be possible if timeStringValid(inputString) == true
+    *glyphIndex = 10;
   }
 
   if (DEBUG) {
