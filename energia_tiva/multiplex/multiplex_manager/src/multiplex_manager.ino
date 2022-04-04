@@ -47,10 +47,10 @@ void loop() {
     stringComplete = (inputStringValid(inputString) && timeStringValid(inputString));
     // now string resembles '+[0-:][0-:]:[0-:][0-:]\n' 
     if (stringComplete == true) {
-      setGlyphIndex(&glyphIndex[0], inputString, 1);
-      setGlyphIndex(&glyphIndex[1], inputString, 2);
-      setGlyphIndex(&glyphIndex[2], inputString, 4);
-      setGlyphIndex(&glyphIndex[3], inputString, 5);
+      setGlyphIndex(&glyphIndex[0], inputString, numberIndexInString[0]);
+      setGlyphIndex(&glyphIndex[1], inputString, numberIndexInString[1]);
+      setGlyphIndex(&glyphIndex[2], inputString, numberIndexInString[2]);
+      setGlyphIndex(&glyphIndex[3], inputString, numberIndexInString[3]);
     }
 
     if (DEBUG) {
