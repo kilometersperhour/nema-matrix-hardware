@@ -39,7 +39,9 @@ const int matrixPin[MATRICES_PER_DISPLAY] = {
 
 /* Special considerations for pixel pins and matrix pins:
 https://web.archive.org/web/20220324051024/https://www.ti.com/lit/ds/spms376e/spms376e.pdf, p.650
-To configure pins 8, 32, 38, 11, 12, 13, 17, and 19, (PA7, PD7, PC3, PA2, PA3, PA4, PF0, PB2)
+To configure pins 
+   8,  32,  38,  11,  12,  13, 17, & 19, 
+(PA7, PD7, PC3, PA2, PA3, PA4, PF0, PB2)
 the following must be done:
 All listed (above) pins should be reconfigured as outputs (GPIO) with 2mA drive.
 
