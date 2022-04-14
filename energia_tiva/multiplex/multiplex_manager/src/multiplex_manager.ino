@@ -4,6 +4,7 @@
 #include "ff_scoreboard_properties.h"
 #endif
 
+// TODO determine if pin 4 staying on is an EE issue or a CE issue
 
 // a string to hold incoming data
 // the following must be global due to the usage of the serialEvent() function
